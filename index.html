@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PMO &amp; Application Support — Bomb Party</title>
+<style>
+:root {
+  --navy:#0F3053;
+  --navy-mid:#1A3F66;
+  --navy-light:#254F7A;
+  --citron:#D4E44B;
+  --citron-light:#E8F56A;
+  --white:#FFFFFF;
+  --off-white:#F6F8FA;
+  --border:#D0D7DE;
+  --text:#1A2535;
+  --text-muted:#5A6A7E;
+  --red:#D73A49;
+  --amber:#E6952A;
+  --green:#1A7F37;
+  --radius:10px;
+  --shadow:0 2px 8px rgba(0,0,0,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans','Inter',sans-serif;background:var(--off-white);color:var(--text);min-height:100vh;}
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+/* ── HEADER ── */
+.header{background:var(--navy);padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+.header-brand{display:flex;align-items:center;gap:14px;}
+.header-badge{background:var(--citron);color:var(--navy);font-weight:800;font-size:11px;letter-spacing:2px;padding:5px 10px;border-radius:6px;}
+.header-title{color:var(--white);font-size:20px;font-weight:700;}
+.header-sub{color:rgba(255,255,255,0.55);font-size:12px;}
+.jira-status{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);}
+.jira-status.ok{background:rgba(26,127,55,0.25);color:#4ac26b;}
+.jira-status.err{background:rgba(215,58,73,0.25);color:#f85149;}
+
+/* ── TABS ── */
+.tabs{background:var(--navy);border-bottom:1px solid rgba(255,255,255,0.1);padding:0 32px;display:flex;gap:0;overflow-x:auto;}
+.tab{padding:14px 20px;color:rgba(255,255,255,0.55);font-size:12px;font-weight:600;letter-spacing:0.5px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;}
+.tab:hover{color:rgba(255,255,255,0.85);}
+.tab.active{color:var(--citron);border-bottom:2px solid var(--citron);}
+.tab-num{margin-right:6px;opacity:0.5;}
+
+/* ── MAIN ── */
+.main{max-width:900px;margin:0 auto;padding:32px 20px;}
+
+/* ── FORM HEADER ── */
+.form-hd{margin-bottom:24px;}
+.form-hd h2{font-size:22px;font-weight:700;color:var(--navy);}
+.form-hd p{color:var(--text-muted);font-size:14px;margin-top:4px;}
+.req-note{font-size:12px;color:var(--text-muted);margin:8px 0 16px;}
+.req-note span{color:var(--red);}
+
+/* ── CARD ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;box-shadow:var(--shadow);}
+.card-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px;}
+.card-ico{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.ic-navy{background:#EAF0F8;}
+.ic-citron{background:#F5F8D0;}
+.ic-red{background:#FDEDEF;}
+.ic-amber{background:#FEF3E0;}
+.ic-green{background:#E3F8EC;}
+.ic-purple{background:#F0EBFF;}
+.card-hd-text .ct{font-weight:700;font-size:15px;color:var(--navy);}
+.card-hd-text .cd{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.sec-divider{text-align:center;position:relative;margin:24px 0 16px;}
+.sec-divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border);}
+.sec-divider span{background:var(--white);position:relative;padding:0 12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;}
+@media(max-width:640px){.g2,.g3{grid-template-columns:1fr;}}
+
+/* ── FIELD ── */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:7px;font-size:14px;font-family:inherit;color:var(--text);background:var(--white);transition:border-color .15s,box-shadow .15s;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,48,83,0.08);}
+.field textarea{resize:vertical;min-height:80px;}
+.req{color:var(--red);}
+
+/* ── RADIO + CHECK ── */
+.radio-group,.check-group{display:flex;flex-wrap:wrap;gap:8px;}
+.radio-opt,.check-opt{display:flex;align-items:center;gap:7px;padding:8px 14px;border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:13px;user-select:none;transition:all .12s;}
+.radio-opt:hover,.check-opt:hover{border-color:var(--navy);background:#F0F4FA;}
+.radio-opt.selected,.check-opt.selected{border-color:var(--navy);background:#EAF0F8;font-weight:600;}
+.radio-opt input,.check-opt input{accent-color:var(--navy);}
+
+/* ── PRIORITY ── */
+.priority-group{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.priority-opt{border:1px solid var(--border);border-radius:8px;padding:10px 8px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;transition:all .12s;}
+.priority-opt:hover{border-color:var(--navy);}
+.priority-opt.selected{border-color:var(--navy);background:#EAF0F8;}
+
+/* ── FILE UPLOAD ── */
+.file-drop{border:2px dashed var(--border);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:border-color .15s;}
+.file-drop:hover{border-color:var(--navy);}
+.file-drop-ico{font-size:24px;margin-bottom:6px;}
+.file-drop-label{font-size:13px;color:var(--text-muted);}
+.file-drop-hint{font-size:11px;color:var(--text-muted);margin-top:4px;}
+
+/* ── BUTTONS ── */
+.btn{padding:11px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s;}
+.btn-primary{background:var(--navy);color:var(--white);}
+.btn-primary:hover{background:var(--navy-mid);}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--off-white);}
+.form-actions{display:flex;gap:12px;margin-top:24px;}
+
+/* ── ADMIN LOCK ── */
+.lock-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:32px;text-align:center;max-width:420px;margin:0 auto;}
+.lock-ico{font-size:40px;margin-bottom:12px;}
+.lock-card h3{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.lock-card p{font-size:13px;color:var(--text-muted);margin-bottom:16px;}
+.lock-note{font-size:12px;color:var(--text-muted);margin-top:12px;}
+.lock-hint{font-size:11px;color:var(--text-muted);margin-top:8px;font-style:italic;}
+
+/* ── SETTINGS PANEL ── */
+.settings-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;}
+.settings-overlay.open{display:flex;}
+.settings-panel{background:var(--white);border-radius:14px;padding:28px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;position:relative;}
+.settings-panel h3{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.settings-panel .desc{font-size:12px;color:var(--text-muted);margin-bottom:20px;}
+.close-btn{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);}
+.mapping-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:center;}
+.mapping-label{font-size:13px;font-weight:600;color:var(--navy);}
+.toggle-pw{background:none;border:none;cursor:pointer;font-size:14px;position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);}
+.pw-wrap{position:relative;}
+
+/* ── SUBMISSIONS LOG ── */
+.log-empty{text-align:center;padding:48px 20px;color:var(--text-muted);}
+.log-empty-ico{font-size:36px;margin-bottom:10px;}
+.submission-card{border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;}
+.submission-card-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.submission-type-badge{font-size:11px;font-weight:700;letter-spacing:0.5px;padding:3px 9px;border-radius:20px;background:#EAF0F8;color:var(--navy);}
+.submission-ts{font-size:11px;color:var(--text-muted);}
+.submission-field{font-size:12px;margin-bottom:3px;}<br>
+.submission-field strong{color:var(--navy);}
+
+/* ── SUCCESS MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:14px;padding:32px;width:420px;max-width:92vw;text-align:center;}
+.modal-ico{font-size:40px;margin-bottom:10px;}
+.modal h3{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.modal p{font-size:13px;color:var(--text-muted);margin-bottom:16px;}
+.jira-ticket-box{background:#EAF0F8;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13px;}
+.jira-ticket-box strong{color:var(--navy);}
+.jira-ticket-link{color:var(--navy);font-weight:700;}
+.modal-note{font-size:12px;color:var(--text-muted);margin-top:8px;}
+
+/* ── EXPORT ── */
+.log-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.log-hd h3{font-size:16px;font-weight:700;color:var(--navy);}
+.badge-count{background:var(--navy);color:var(--white);font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;}
+
+/* ── ADMIN SETTINGS LINK ── */
+.admin-link{cursor:pointer;font-size:12px;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:5px;}
+.admin-link:hover{color:rgba(255,255,255,0.75);}
+
+/* page display */
+.page{display:none;}
+.page.active{display:block;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand">
+    <div class="header-badge">BOMBPARTY</div>
+    <div>
+      <div class="header-title">PMO &amp; App Support Intake</div>
+      <div class="header-sub">Powered by Jira · GitHub Pages</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span id="jiraStatusBadge" class="jira-status">Jira: Not Configured</span>
+    <span class="admin-link" onclick="openAdminGate()">🔒</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="showPage('project',this)"><span class="tab-num">01</span>Project Request</div>
+  <div class="tab" onclick="showPage('change',this)"><span class="tab-num">02</span>Change Request</div>
+  <div class="tab" onclick="showPage('appsupport',this)"><span class="tab-num">03</span>App Support</div>
+  <div class="tab" onclick="showPage('enhancement',this)"><span class="tab-num">04</span>Enhancement</div>
+  <div class="tab" onclick="showPage('resource',this)"><span class="tab-num">05</span>Resource Request</div>
+  <div class="tab" onclick="showPage('useraccess',this)"><span class="tab-num">06</span>User Access</div>
+  <div class="tab" onclick="showPage('log',this)"><span class="tab-num">07</span>Submissions <span id="logCountBadge" class="badge-count" style="display:none;">0</span></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 01 — PROJECT REQUEST
+════════════════════════════════════════════ -->
+<div class="main">
+
+<div id="page-project" class="page active">
+  <div class="form-hd">
+    <h2>Submit a New Project for PMO Review</h2>
+    <p>Use this form to formally request a new initiative. All submissions are reviewed by the PMO weekly and prioritized against the active portfolio.</p>
+  </div>
+  <p class="req-note"><span>*</span> Required fields</p>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-navy">🗂️</div>
+      <div class="card-hd-text"><div class="ct">Project Overview</div><div class="cd">Define scope, goals, and sponsorship</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Requestor Name <span class="req">*</span></label><input id="pr_name" placeholder="Full name" /></div>
+      <div class="field"><label>Requestor Email <span class="req">*</span></label><input type="email" id="pr_email" placeholder="you@bombparty.com" /></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Project Name <span class="req">*</span></label><input id="pr_projname" placeholder="Initiative or project name" /></div>
+      <div class="field"><label>Executive Sponsor</label><input id="pr_sponsor" placeholder="Name of exec sponsor" /></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Business Unit / Team <span class="req">*</span></label>
+        <select id="pr_bu">
+          <option value="">Select</option>
+          <option>Product</option><option>Engineering</option><option>Design</option><option>Marketing</option>
+          <option>Operations</option><option>Finance</option><option>Legal / Compliance</option>
+          <option>HR / People</option><option>Executive</option><option>Cross-functional</option>
+        </select>
+      </div>
+      <div class="field"><label>Project Type <span class="req">*</span></label>
+        <select id="pr_type">
+          <option value="">Select</option>
+          <option>New Product / Feature</option><option>Platform / Infrastructure</option>
+          <option>Process Improvement</option><option>Compliance / Regulatory</option>
+          <option>Integration / API</option><option>Data / Analytics</option>
+          <option>Internal Tool / Automation</option><option>R&amp;D / Innovation</option>
+          <option>Vendor / Partner</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Delivery Methodology</label>
+        <select id="pr_method">
+          <option value="">Select</option>
+          <option>Agile / Scrum</option><option>Agile / Kanban</option><option>SAFe</option>
+          <option>Waterfall</option><option>Hybrid</option><option>TBD</option>
+        </select>
+      </div>
+      <div class="field"><label>Priority <span class="req">*</span></label>
+        <div class="priority-group" id="pr_priority_group">
+          <div class="priority-opt" onclick="selectPriority('pr_priority_group',this,'Low')">🟢 Low</div>
+          <div class="priority-opt" onclick="selectPriority('pr_priority_group',this,'Medium')">🟡 Medium</div>
+          <div class="priority-opt" onclick="selectPriority('pr_priority_group',this,'High')">🔴 High</div>
+          <div class="priority-opt" onclick="selectPriority('pr_priority_group',this,'Critical')">⚡ Critical / Strategic</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-citron">💼</div>
+      <div class="card-hd-text"><div class="ct">Business Case</div><div class="cd">Justify the investment and define success</div></div>
+    </div>
+    <div class="field"><label>Problem / Opportunity Statement <span class="req">*</span></label><textarea id="pr_problem" placeholder="What problem are we solving or opportunity are we capturing?"></textarea></div>
+    <div class="field"><label>Goals &amp; Success Metrics <span class="req">*</span></label><textarea id="pr_goals" placeholder="How will we measure success?"></textarea></div>
+    <div class="g2">
+      <div class="field"><label>In-Scope</label><textarea id="pr_inscope" style="min-height:60px;" placeholder="What is explicitly in scope?"></textarea></div>
+      <div class="field"><label>Out-of-Scope</label><textarea id="pr_outscope" style="min-height:60px;" placeholder="What is explicitly out of scope?"></textarea></div>
+    </div>
+    <div class="field"><label>Assumptions &amp; Constraints</label><textarea id="pr_assumptions" style="min-height:60px;" placeholder="Key assumptions or known constraints"></textarea></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-amber">📅</div>
+      <div class="card-hd-text"><div class="ct">Timeline &amp; Resources</div><div class="cd">Dates, budget, and team size</div></div>
+    </div>
+    <div class="g3">
+      <div class="field"><label>Requested Start Date</label><input type="date" id="pr_start" /></div>
+      <div class="field"><label>Target Go-Live / Completion</label><input type="date" id="pr_end" /></div>
+      <div class="field"><label>Estimated Duration</label>
+        <select id="pr_duration">
+          <option value="">Select</option>
+          <option>&lt; 2 weeks</option><option>2–4 weeks</option><option>1–2 months</option>
+          <option>2–3 months</option><option>3–6 months</option><option>6–12 months</option><option>12+ months</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Budget Range (if known)</label>
+        <select id="pr_budget">
+          <option value="">Select</option>
+          <option>No budget needed</option><option>&lt; $10,000</option><option>$10k – $50k</option>
+          <option>$50k – $100k</option><option>$100k – $250k</option><option>$250k+</option><option>TBD</option>
+        </select>
+      </div>
+      <div class="field"><label>Estimated Team Size</label>
+        <select id="pr_teamsize">
+          <option value="">Select</option>
+          <option>1 (solo)</option><option>2–3</option><option>4–6</option><option>7–10</option><option>10+</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Key Stakeholders / Teams</label><input id="pr_stakeholders" placeholder="Teams or individuals involved" /></div>
+    <div class="field"><label>Known Risks or Blockers</label><textarea id="pr_risks" style="min-height:60px;" placeholder="Any known risks, dependencies, or blockers"></textarea></div>
+    <div class="field"><label>Supporting Documents (optional)</label>
+      <div class="file-drop" onclick="document.getElementById('pr_file').click()">
+        <div class="file-drop-ico">📎</div>
+        <div class="file-drop-label">Attach brief, PRD, deck, or any supporting doc</div>
+        <div class="file-drop-hint">PDF, PPTX, DOCX, XLSX · max 20MB</div>
+        <input type="file" id="pr_file" style="display:none;" accept=".pdf,.pptx,.docx,.xlsx" />
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" onclick="submitForm('project')">Submit to PMO →</button>
+    <button class="btn btn-ghost" onclick="clearForm('project')">Clear Form</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 02 — CHANGE REQUEST
+════════════════════════════════════════════ -->
+<div id="page-change" class="page">
+  <div class="form-hd">
+    <h2>Request a Scope, Schedule, or Budget Change</h2>
+    <p>All changes to active projects — scope, timeline, cost, or resources — require a formal change request reviewed and approved by the PMO.</p>
+  </div>
+  <p class="req-note"><span>*</span> Required fields</p>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-amber">🔄</div>
+      <div class="card-hd-text"><div class="ct">Change Request Details</div><div class="cd">Linked to an active project or initiative</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Requestor Name <span class="req">*</span></label><input id="cr_name" placeholder="Full name" /></div>
+      <div class="field"><label>Requestor Email <span class="req">*</span></label><input type="email" id="cr_email" placeholder="you@bombparty.com" /></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Project / Initiative Name <span class="req">*</span></label><input id="cr_project" placeholder="Name of affected project" /></div>
+      <div class="field"><label>Project Manager / Owner</label><input id="cr_pm" placeholder="PM name" /></div>
+    </div>
+    <div class="field"><label>Change Category <span class="req">*</span></label>
+      <div class="check-group" id="cr_cat_group">
+        <label class="check-opt"><input type="checkbox" value="Scope Change" /> 📐 Scope Change</label>
+        <label class="check-opt"><input type="checkbox" value="Schedule Change" /> 📅 Schedule Change</label>
+        <label class="check-opt"><input type="checkbox" value="Budget Change" /> 💰 Budget Change</label>
+        <label class="check-opt"><input type="checkbox" value="Resource Change" /> 👥 Resource Change</label>
+        <label class="check-opt"><input type="checkbox" value="Risk Response" /> ⚠️ Risk Response</label>
+        <label class="check-opt"><input type="checkbox" value="Other" /> Other</label>
+      </div>
+    </div>
+    <div class="field"><label>Priority / Urgency <span class="req">*</span></label>
+      <div class="priority-group" id="cr_priority_group">
+        <div class="priority-opt" onclick="selectPriority('cr_priority_group',this,'Low')">🟢 Low</div>
+        <div class="priority-opt" onclick="selectPriority('cr_priority_group',this,'Medium')">🟡 Medium</div>
+        <div class="priority-opt" onclick="selectPriority('cr_priority_group',this,'High')">🔴 High</div>
+        <div class="priority-opt" onclick="selectPriority('cr_priority_group',this,'Urgent')">⚡ Urgent</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-red">📋</div>
+      <div class="card-hd-text"><div class="ct">Change Details</div><div class="cd">What is changing and why</div></div>
+    </div>
+    <div class="field"><label>Description of Change <span class="req">*</span></label><textarea id="cr_desc" placeholder="Describe the change in detail"></textarea></div>
+    <div class="field"><label>Reason / Justification <span class="req">*</span></label><textarea id="cr_reason" placeholder="Why is this change necessary?"></textarea></div>
+    <div class="field"><label>Impact Assessment <span class="req">*</span></label><textarea id="cr_impact" placeholder="What is the impact if this change is not approved?"></textarea></div>
+    <div class="g2">
+      <div class="field"><label>Current Baseline (what exists today)</label><textarea id="cr_current" style="min-height:60px;" placeholder="Current state"></textarea></div>
+      <div class="field"><label>Proposed Revised Baseline</label><textarea id="cr_proposed" style="min-height:60px;" placeholder="Proposed new state"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-navy">📅</div>
+      <div class="card-hd-text"><div class="ct">Schedule &amp; Cost Impact</div><div class="cd">Quantify the change</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Original Go-Live Date</label><input type="date" id="cr_orig_date" /></div>
+      <div class="field"><label>Revised Go-Live Date (if applies)</label><input type="date" id="cr_rev_date" /></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Schedule Impact</label>
+        <select id="cr_sched_impact">
+          <option value="">Select</option>
+          <option>No impact</option><option>+1–2 weeks</option><option>+2–4 weeks</option>
+          <option>+1–2 months</option><option>+2+ months</option><option>TBD</option>
+        </select>
+      </div>
+      <div class="field"><label>Budget Impact</label>
+        <select id="cr_budget_impact">
+          <option value="">Select</option>
+          <option>No budget impact</option><option>+&lt; $5,000</option><option>+$5k–$20k</option>
+          <option>+$20k–$50k</option><option>+$50k+</option><option>Budget reduction</option><option>TBD</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Approval Required From</label>
+        <select id="cr_approver">
+          <option value="">Select</option>
+          <option>Project Manager</option><option>PMO Director</option><option>Department Head</option>
+          <option>Executive Sponsor</option><option>Steering Committee</option>
+        </select>
+      </div>
+      <div class="field"><label>Alternatives Considered</label><input id="cr_alts" placeholder="Alternatives evaluated" /></div>
+    </div>
+    <div class="field"><label>Supporting Documentation (optional)</label>
+      <div class="file-drop" onclick="document.getElementById('cr_file').click()">
+        <div class="file-drop-ico">📎</div>
+        <div class="file-drop-label">Attach revised schedule, cost analysis, or supporting docs</div>
+        <div class="file-drop-hint">PDF, PPTX, DOCX, XLSX · max 20MB</div>
+        <input type="file" id="cr_file" style="display:none;" accept=".pdf,.pptx,.docx,.xlsx" />
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" onclick="submitForm('change')">Submit Change Request →</button>
+    <button class="btn btn-ghost" onclick="clearForm('change')">Clear Form</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 03 — APP SUPPORT
+════════════════════════════════════════════ -->
+<div id="page-appsupport" class="page">
+  <div class="form-hd">
+    <h2>Report an Application Issue or Incident</h2>
+    <p>Use this form to report bugs, system errors, data issues, or degraded performance in any Bomb Party business application. Support SLA: P1 = 2hrs, P2 = 8hrs, P3 = 3 days.</p>
+  </div>
+  <p class="req-note"><span>*</span> Required fields</p>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-red">⚙️</div>
+      <div class="card-hd-text"><div class="ct">Incident Details</div><div class="cd">Application bugs, data errors, or performance issues</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Your Name <span class="req">*</span></label><input id="as_name" placeholder="Full name" /></div>
+      <div class="field"><label>Your Email <span class="req">*</span></label><input type="email" id="as_email" placeholder="you@bombparty.com" /></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Business Unit / Department <span class="req">*</span></label>
+        <select id="as_bu">
+          <option value="">Select</option>
+          <option>Product</option><option>Engineering</option><option>Design</option><option>Marketing</option>
+          <option>Operations</option><option>Finance</option><option>Legal / Compliance</option>
+          <option>HR / People</option><option>Executive</option>
+        </select>
+      </div>
+      <div class="field"><label>Application / System Affected <span class="req">*</span></label>
+        <select id="as_app">
+          <option value="">Select application</option>
+          <option>Bomb Party Web App</option>
+          <option>Bomb Party Mobile (iOS)</option>
+          <option>Bomb Party Mobile (Android)</option>
+          <option>Admin Dashboard</option>
+          <option>Billing / Payments System</option>
+          <option>CRM / Salesforce</option>
+          <option>Analytics / Data Pipeline</option>
+          <option>Notification System</option>
+          <option>Auth / Identity System</option>
+          <option>API / Backend Service</option>
+          <option>Algolia</option>
+          <option>Contentful Home</option>
+          <option>Contentful Blog</option>
+          <option>Contentful Collections</option>
+          <option>Cloudinary Home</option>
+          <option>Cloudinary Blog</option>
+          <option>Cloudinary Collections</option>
+          <option>Cloudflare</option>
+          <option>Confluence</option>
+          <option>Jira</option>
+          <option>BP App</option>
+          <option>BP Studio</option>
+          <option>Internal Operations Tool</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Issue Type <span class="req">*</span></label>
+      <div class="check-group" id="as_issue_group">
+        <label class="check-opt"><input type="checkbox" value="Bug / Error" /> 🐛 Bug / Error</label>
+        <label class="check-opt"><input type="checkbox" value="Performance / Slowness" /> 🐢 Performance / Slowness</label>
+        <label class="check-opt"><input type="checkbox" value="Data Issue" /> 📊 Data Issue</label>
+        <label class="check-opt"><input type="checkbox" value="Outage / Unavailable" /> 🔴 Outage / Unavailable</label>
+        <label class="check-opt"><input type="checkbox" value="Access / Permissions" /> 🔒 Access / Permissions</label>
+        <label class="check-opt"><input type="checkbox" value="Config Error" /> ⚙️ Config Error</label>
+        <label class="check-opt"><input type="checkbox" value="Other" /> Other</label>
+      </div>
+    </div>
+    <div class="field"><label>Severity / Priority <span class="req">*</span></label>
+      <div class="priority-group" id="as_priority_group">
+        <div class="priority-opt" onclick="selectPriority('as_priority_group',this,'P3')">P3 — Low (minor, workaround exists)</div>
+        <div class="priority-opt" onclick="selectPriority('as_priority_group',this,'P2')">P2 — Medium (business impact, limited workaround)</div>
+        <div class="priority-opt" onclick="selectPriority('as_priority_group',this,'P1')">P1 — High (major impact, no workaround)</div>
+        <div class="priority-opt" onclick="selectPriority('as_priority_group',this,'P0')">P0 — Critical (full outage / data loss)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-navy">🔍</div>
+      <div class="card-hd-text"><div class="ct">Issue Description</div><div class="cd">Help us reproduce and diagnose quickly</div></div>
+    </div>
+    <div class="field"><label>Summary / Title <span class="req">*</span></label><input id="as_summary" placeholder="One-line description of the issue" /></div>
+    <div class="field"><label>Detailed Description <span class="req">*</span></label><textarea id="as_desc" placeholder="Full description of the issue"></textarea></div>
+    <div class="field"><label>Steps to Reproduce <span class="req">*</span></label><textarea id="as_steps" placeholder="1. Go to...  2. Click...  3. See error..."></textarea></div>
+    <div class="field"><label>Expected vs. Actual Behavior</label><textarea id="as_behavior" style="min-height:60px;" placeholder="What should happen vs. what actually happens"></textarea></div>
+    <div class="g2">
+      <div class="field"><label>When Did It Start? <span class="req">*</span></label><input type="datetime-local" id="as_when" /></div>
+      <div class="field"><label>Environment</label>
+        <select id="as_env">
+          <option value="">Select</option>
+          <option>Production</option><option>Staging</option><option>Development</option><option>All Environments</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>How Many Users Affected?</label>
+        <select id="as_users">
+          <option value="">Select</option>
+          <option>Just me</option><option>My team (2–10)</option><option>Many users (10–100)</option>
+          <option>Large segment (100–1000)</option><option>All users</option><option>Unknown</option>
+        </select>
+      </div>
+      <div class="field"><label>Business Impact</label><input id="as_biz_impact" placeholder="Revenue, compliance, ops impact?" /></div>
+    </div>
+    <div class="field"><label>Workaround Available?</label>
+      <div class="radio-group" id="as_workaround_group">
+        <label class="radio-opt" onclick="selectRadio('as_workaround_group',this)"><input type="radio" name="as_workaround" value="Yes, documented" /> ✅ Yes, documented</label>
+        <label class="radio-opt" onclick="selectRadio('as_workaround_group',this)"><input type="radio" name="as_workaround" value="Yes, but not ideal" /> ⚠️ Yes, but not ideal</label>
+        <label class="radio-opt" onclick="selectRadio('as_workaround_group',this)"><input type="radio" name="as_workaround" value="No workaround" /> ❌ No workaround</label>
+      </div>
+    </div>
+    <div class="field"><label>Screenshot or Log File (optional)</label>
+      <div class="file-drop" onclick="document.getElementById('as_file').click()">
+        <div class="file-drop-ico">📎</div>
+        <div class="file-drop-label">Attach screenshot, video, or log file</div>
+        <div class="file-drop-hint">PNG, JPG, MP4, LOG, ZIP · max 20MB</div>
+        <input type="file" id="as_file" style="display:none;" accept=".png,.jpg,.jpeg,.mp4,.log,.zip" />
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" onclick="submitForm('appsupport')">Submit Support Ticket →</button>
+    <button class="btn btn-ghost" onclick="clearForm('appsupport')">Clear Form</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 04 — ENHANCEMENT
+════════════════════════════════════════════ -->
+<div id="page-enhancement" class="page">
+  <div class="form-hd">
+    <h2>Request a Feature or Improvement to an Existing App</h2>
+    <p>Use this form to request enhancements to existing Bomb Party applications — new features, UX improvements, workflow automations, or reporting additions.</p>
+  </div>
+  <p class="req-note"><span>*</span> Required fields</p>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-citron">✨</div>
+      <div class="card-hd-text"><div class="ct">Enhancement Request</div><div class="cd">Improvements to existing systems and applications</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Requestor Name <span class="req">*</span></label><input id="en_name" placeholder="Full name" /></div>
+      <div class="field"><label>Requestor Email <span class="req">*</span></label><input type="email" id="en_email" placeholder="you@bombparty.com" /></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Application / System <span class="req">*</span></label>
+        <select id="en_app">
+          <option value="">Select application</option>
+          <option>Bomb Party Web App</option>
+          <option>Bomb Party Mobile (iOS)</option>
+          <option>Bomb Party Mobile (Android)</option>
+          <option>Admin Dashboard</option>
+          <option>Billing / Payments System</option>
+          <option>CRM / Salesforce</option>
+          <option>Analytics / Data Pipeline</option>
+          <option>Notification System</option>
+          <option>Auth / Identity System</option>
+          <option>API / Backend Service</option>
+          <option>Algolia</option>
+          <option>Contentful Home</option>
+          <option>Contentful Blog</option>
+          <option>Contentful Collections</option>
+          <option>Cloudinary Home</option>
+          <option>Cloudinary Blog</option>
+          <option>Cloudinary Collections</option>
+          <option>Cloudflare</option>
+          <option>Confluence</option>
+          <option>Jira</option>
+          <option>BP App</option>
+          <option>BP Studio</option>
+          <option>Internal Operations Tool</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Enhancement Type <span class="req">*</span></label>
+        <select id="en_type">
+          <option value="">Select type</option>
+          <option>New Feature</option><option>UX / UI Improvement</option>
+          <option>Workflow Automation</option><option>Reporting / Dashboard</option>
+          <option>Integration / API Connection</option><option>Performance Improvement</option>
+          <option>Configuration Change</option><option>Accessibility</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Business Unit / Department <span class="req">*</span></label>
+        <select id="en_bu">
+          <option value="">Select</option>
+          <option>Product</option><option>Engineering</option><option>Design</option><option>Marketing</option>
+          <option>Operations</option><option>Finance</option><option>Legal / Compliance</option>
+          <option>HR / People</option><option>Executive</option><option>Cross-functional</option>
+        </select>
+      </div>
+      <div class="field"><label>Priority <span class="req">*</span></label>
+        <div class="priority-group" id="en_priority_group">
+          <div class="priority-opt" onclick="selectPriority('en_priority_group',this,'Nice-to-Have')">🟢 Nice-to-Have</div>
+          <div class="priority-opt" onclick="selectPriority('en_priority_group',this,'Medium')">🟡 Medium</div>
+          <div class="priority-opt" onclick="selectPriority('en_priority_group',this,'High')">🔴 High (blocking work)</div>
+          <div class="priority-opt" onclick="selectPriority('en_priority_group',this,'Critical')">⚡ Critical (compliance / revenue)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-green">💡</div>
+      <div class="card-hd-text"><div class="ct">Request Details</div><div class="cd">Describe what you need and why</div></div>
+    </div>
+    <div class="field"><label>Enhancement Title <span class="req">*</span></label><input id="en_title" placeholder="Short title for this request" /></div>
+    <div class="field"><label>Current State — What Exists Today <span class="req">*</span></label><textarea id="en_current" placeholder="Describe the current behavior or limitation"></textarea></div>
+    <div class="field"><label>Desired State — What You're Requesting <span class="req">*</span></label><textarea id="en_desired" placeholder="Describe the outcome you want"></textarea></div>
+    <div class="field"><label>Business Justification &amp; Value <span class="req">*</span></label><textarea id="en_justification" placeholder="Why is this important? What's the business impact?"></textarea></div>
+    <div class="field"><label>Who Benefits?</label>
+      <div class="check-group" id="en_benefits_group">
+        <label class="check-opt"><input type="checkbox" value="Players" /> 🎮 Players</label>
+        <label class="check-opt"><input type="checkbox" value="Internal Teams" /> 🏢 Internal Teams</label>
+        <label class="check-opt"><input type="checkbox" value="Creators" /> 🎨 Creators</label>
+        <label class="check-opt"><input type="checkbox" value="Management" /> 📊 Management</label>
+        <label class="check-opt"><input type="checkbox" value="Partners" /> 🤝 Partners</label>
+        <label class="check-opt"><input type="checkbox" value="All" /> 🌐 All</label>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Estimated Impact</label>
+        <div class="priority-group" id="en_impact_group">
+          <div class="priority-opt" onclick="selectPriority('en_impact_group',this,'Low')">🌱 Low</div>
+          <div class="priority-opt" onclick="selectPriority('en_impact_group',this,'Medium')">🌿 Medium</div>
+          <div class="priority-opt" onclick="selectPriority('en_impact_group',this,'High')">🌳 High</div>
+          <div class="priority-opt" onclick="selectPriority('en_impact_group',this,'Game-changer')">🚀 Game-changer</div>
+        </div>
+      </div>
+      <div>
+        <div class="field"><label>Requested Delivery Date</label><input type="date" id="en_delivery" /></div>
+        <div class="field"><label>Estimated Effort (your guess)</label>
+          <select id="en_effort">
+            <option value="">Select</option>
+            <option>Small — hours / 1–2 days</option><option>Medium — 1–2 weeks</option>
+            <option>Large — 2–4 weeks</option><option>Very Large — 1+ month</option><option>Unknown</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="field"><label>Mockup, Reference, or Prototype Link</label><input id="en_link" placeholder="https://" /></div>
+    <div class="field"><label>Additional Notes</label><textarea id="en_notes" style="min-height:60px;" placeholder="Any other context"></textarea></div>
+    <div class="field"><label>Attachment (optional)</label>
+      <div class="file-drop" onclick="document.getElementById('en_file').click()">
+        <div class="file-drop-ico">📎</div>
+        <div class="file-drop-label">Attach mockup, screenshot, or supporting doc</div>
+        <div class="file-drop-hint">PDF, PPTX, DOCX, PNG, JPG · max 20MB</div>
+        <input type="file" id="en_file" style="display:none;" accept=".pdf,.pptx,.docx,.png,.jpg,.jpeg" />
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" onclick="submitForm('enhancement')">Submit Enhancement Request →</button>
+    <button class="btn btn-ghost" onclick="clearForm('enhancement')">Clear Form</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 05 — RESOURCE REQUEST
+════════════════════════════════════════════ -->
+<div id="page-resource" class="page">
+  <div class="form-hd">
+    <h2>Request People, Tools, or Budget for a Project</h2>
+    <p>Use this form to request headcount, vendor support, tooling, or budget allocation for a current or upcoming project. Reviewed by PMO and Finance weekly.</p>
+  </div>
+  <p class="req-note"><span>*</span> Required fields</p>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-purple">👥</div>
+      <div class="card-hd-text"><div class="ct">Resource Request</div><div class="cd">Headcount, tooling, vendor, or budget</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Requestor Name <span class="req">*</span></label><input id="rr_name" placeholder="Full name" /></div>
+      <div class="field"><label>Requestor Email <span class="req">*</span></label><input type="email" id="rr_email" placeholder="you@bombparty.com" /></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Linked Project / Initiative <span class="req">*</span></label><input id="rr_project" placeholder="Project name" /></div>
+      <div class="field"><label>Business Unit <span class="req">*</span></label>
+        <select id="rr_bu">
+          <option value="">Select</option>
+          <option>Product</option><option>Engineering</option><option>Design</option><option>Marketing</option>
+          <option>Operations</option><option>Finance</option><option>Legal / Compliance</option>
+          <option>HR / People</option><option>Executive</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Resource Type Requested <span class="req">*</span></label>
+      <div class="check-group" id="rr_type_group">
+        <label class="check-opt"><input type="checkbox" value="Internal Headcount" /> 🏢 Internal Headcount</label>
+        <label class="check-opt"><input type="checkbox" value="Contractor / Freelancer" /> 🤝 Contractor / Freelancer</label>
+        <label class="check-opt"><input type="checkbox" value="Vendor / Agency" /> 🏭 Vendor / Agency</label>
+        <label class="check-opt"><input type="checkbox" value="Software / Tooling" /> 💻 Software / Tooling</label>
+        <label class="check-opt"><input type="checkbox" value="Budget Allocation" /> 💰 Budget Allocation</label>
+        <label class="check-opt"><input type="checkbox" value="Infrastructure / Cloud" /> ☁️ Infrastructure / Cloud</label>
+        <label class="check-opt"><input type="checkbox" value="Training" /> 📚 Training</label>
+      </div>
+    </div>
+    <div class="field"><label>Priority <span class="req">*</span></label>
+      <div class="priority-group" id="rr_priority_group">
+        <div class="priority-opt" onclick="selectPriority('rr_priority_group',this,'Low')">🟢 Low</div>
+        <div class="priority-opt" onclick="selectPriority('rr_priority_group',this,'Medium')">🟡 Medium</div>
+        <div class="priority-opt" onclick="selectPriority('rr_priority_group',this,'High')">🔴 High</div>
+        <div class="priority-opt" onclick="selectPriority('rr_priority_group',this,'Blocking')">⚡ Blocking / Urgent</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-amber">📋</div>
+      <div class="card-hd-text"><div class="ct">Resource Details</div><div class="cd">What do you need and when</div></div>
+    </div>
+    <div class="field"><label>Description of Resource Needed <span class="req">*</span></label><textarea id="rr_desc" placeholder="Describe the resource, role, or tool needed"></textarea></div>
+    <div class="field"><label>Business Justification <span class="req">*</span></label><textarea id="rr_justification" placeholder="Why is this resource needed?"></textarea></div>
+    <div class="g3">
+      <div class="field"><label>Quantity / Count</label><input id="rr_qty" type="number" min="1" placeholder="1" /></div>
+      <div class="field"><label>Date Needed By <span class="req">*</span></label><input type="date" id="rr_needed_by" /></div>
+      <div class="field"><label>Duration of Need</label>
+        <select id="rr_duration">
+          <option value="">Select</option>
+          <option>One-time / Ad hoc</option><option>&lt; 1 month</option><option>1–3 months</option>
+          <option>3–6 months</option><option>6–12 months</option><option>Ongoing / Permanent</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Estimated Cost / Budget Ask</label>
+        <select id="rr_cost">
+          <option value="">Select range</option>
+          <option>No cost (internal only)</option><option>&lt; $5,000</option><option>$5k – $20k</option>
+          <option>$20k – $50k</option><option>$50k – $100k</option><option>$100k+</option><option>TBD / Needs quote</option>
+        </select>
+      </div>
+      <div class="field"><label>Budget Source</label>
+        <select id="rr_budget_src">
+          <option value="">Select</option>
+          <option>Existing project budget</option><option>Departmental budget</option>
+          <option>New budget request</option><option>TBD / Unknown</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Skills / Qualifications Required (for headcount)</label><textarea id="rr_skills" style="min-height:60px;" placeholder="Required skills, certifications, or experience"></textarea></div>
+    <div class="field"><label>Impact if Not Approved</label><textarea id="rr_impact" style="min-height:60px;" placeholder="What happens if this request is not fulfilled?"></textarea></div>
+    <div class="field"><label>Alternatives Considered</label><input id="rr_alts" placeholder="Other options evaluated" /></div>
+    <div class="field"><label>Supporting Documentation (optional)</label>
+      <div class="file-drop" onclick="document.getElementById('rr_file').click()">
+        <div class="file-drop-ico">📎</div>
+        <div class="file-drop-label">Attach SOW, vendor quote, job description, or brief</div>
+        <div class="file-drop-hint">PDF, PPTX, DOCX, XLSX · max 20MB</div>
+        <input type="file" id="rr_file" style="display:none;" accept=".pdf,.pptx,.docx,.xlsx" />
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" onclick="submitForm('resource')">Submit Resource Request →</button>
+    <button class="btn btn-ghost" onclick="clearForm('resource')">Clear Form</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 06 — USER ACCESS
+════════════════════════════════════════════ -->
+<div id="page-useraccess" class="page">
+  <div class="form-hd">
+    <h2>Request, Modify, or Revoke System Access</h2>
+    <p>Use this form to provision new users, update existing access levels, or offboard departing team members across all Bomb Party systems and applications. Manager approval is required for all requests.</p>
+  </div>
+  <p class="req-note"><span>*</span> Required fields</p>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-navy">🔐</div>
+      <div class="card-hd-text"><div class="ct">Access Request Details</div><div class="cd">New access, modification, or revocation</div></div>
+    </div>
+    <div class="field"><label>Request Type <span class="req">*</span></label>
+      <div class="check-group" id="ua_type_group">
+        <label class="check-opt"><input type="checkbox" value="New User Provisioning" /> 🆕 New User Provisioning</label>
+        <label class="check-opt"><input type="checkbox" value="Access Modification" /> ✏️ Access Modification</label>
+        <label class="check-opt"><input type="checkbox" value="Access Revocation" /> ❌ Access Revocation</label>
+        <label class="check-opt"><input type="checkbox" value="Temporary Access" /> ⏳ Temporary Access</label>
+        <label class="check-opt"><input type="checkbox" value="Role / Permission Change" /> 🔄 Role / Permission Change</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-amber">👤</div>
+      <div class="card-hd-text"><div class="ct">Requestor Info</div><div class="cd">Manager or HR submitting this request</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Requestor Name (Manager / HR) <span class="req">*</span></label><input id="ua_req_name" placeholder="Your full name" /></div>
+      <div class="field"><label>Requestor Email <span class="req">*</span></label><input type="email" id="ua_req_email" placeholder="you@bombparty.com" /></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-green">👤</div>
+      <div class="card-hd-text"><div class="ct">User Being Provisioned</div><div class="cd">Details of the employee, contractor, or vendor</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>First Name <span class="req">*</span></label><input id="ua_first" placeholder="First name" /></div>
+      <div class="field"><label>Last Name <span class="req">*</span></label><input id="ua_last" placeholder="Last name" /></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Work Email <span class="req">*</span></label><input type="email" id="ua_work_email" placeholder="newuser@bombparty.com" /></div>
+      <div class="field"><label>Job Title <span class="req">*</span></label><input id="ua_title" placeholder="Job title or role" /></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Department <span class="req">*</span></label>
+        <select id="ua_dept">
+          <option value="">Select</option>
+          <option>Product</option><option>Engineering</option><option>Design</option><option>Marketing</option>
+          <option>Operations</option><option>Finance</option><option>Legal / Compliance</option>
+          <option>HR / People</option><option>Executive</option><option>Contractor / External</option>
+        </select>
+      </div>
+      <div class="field"><label>Direct Manager <span class="req">*</span></label><input id="ua_manager" placeholder="Manager's full name" /></div>
+    </div>
+    <div class="field"><label>Employment Type <span class="req">*</span></label>
+      <div class="radio-group" id="ua_emp_group">
+        <label class="radio-opt" onclick="selectRadio('ua_emp_group',this)"><input type="radio" name="ua_emp" value="Full-time" /> Full-time</label>
+        <label class="radio-opt" onclick="selectRadio('ua_emp_group',this)"><input type="radio" name="ua_emp" value="Part-time" /> Part-time</label>
+        <label class="radio-opt" onclick="selectRadio('ua_emp_group',this)"><input type="radio" name="ua_emp" value="Contractor" /> Contractor</label>
+        <label class="radio-opt" onclick="selectRadio('ua_emp_group',this)"><input type="radio" name="ua_emp" value="Vendor" /> Vendor</label>
+        <label class="radio-opt" onclick="selectRadio('ua_emp_group',this)"><input type="radio" name="ua_emp" value="Intern" /> Intern</label>
+      </div>
+    </div>
+    <div class="field"><label>Access Level Requested</label>
+      <select id="ua_level">
+        <option value="">Select</option>
+        <option>Read Only</option><option>Read / Write (Standard)</option><option>Elevated / Power User</option>
+        <option>Admin</option><option>Super Admin</option><option>Custom (see notes)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-purple">🔑</div>
+      <div class="card-hd-text"><div class="ct">Systems &amp; Applications</div><div class="cd">Select all systems that need provisioning</div></div>
+    </div>
+
+    <div class="sec-divider"><span>Systems &amp; Permissions Needed</span></div>
+
+    <div class="field"><label>Tools &amp; Systems to Provision <span class="req">*</span></label>
+      <div class="check-group" id="ua_systems_group">
+        <label class="check-opt"><input type="checkbox" value="Google Workspace" /> 📧 Google Workspace</label>
+        <label class="check-opt"><input type="checkbox" value="Slack" /> 💬 Slack</label>
+        <label class="check-opt"><input type="checkbox" value="Jira" /> 🎯 Jira</label>
+        <label class="check-opt"><input type="checkbox" value="Confluence" /> 📖 Confluence</label>
+        <label class="check-opt"><input type="checkbox" value="GitHub" /> 🐙 GitHub</label>
+        <label class="check-opt"><input type="checkbox" value="AWS" /> ☁️ AWS</label>
+        <label class="check-opt"><input type="checkbox" value="Figma" /> 🎨 Figma</label>
+        <label class="check-opt"><input type="checkbox" value="Datadog" /> 📊 Datadog</label>
+        <label class="check-opt"><input type="checkbox" value="Admin Dashboard" /> ⚙️ Admin Dashboard</label>
+        <label class="check-opt"><input type="checkbox" value="Billing System" /> 💳 Billing System</label>
+        <label class="check-opt"><input type="checkbox" value="CRM / Salesforce" /> 🏢 CRM / Salesforce</label>
+        <label class="check-opt"><input type="checkbox" value="Analytics Platform" /> 📈 Analytics Platform</label>
+        <label class="check-opt"><input type="checkbox" value="VPN" /> 🔒 VPN</label>
+        <label class="check-opt"><input type="checkbox" value="1Password" /> 🔑 1Password</label>
+        <label class="check-opt"><input type="checkbox" value="Zoom" /> 📹 Zoom</label>
+        <label class="check-opt"><input type="checkbox" value="Notion" /> 📝 Notion</label>
+        <label class="check-opt"><input type="checkbox" value="HR System" /> 👥 HR System</label>
+        <label class="check-opt"><input type="checkbox" value="Algolia" /> 🔍 Algolia</label>
+        <label class="check-opt"><input type="checkbox" value="Contentful Home" /> 🏠 Contentful Home</label>
+        <label class="check-opt"><input type="checkbox" value="Contentful Blog" /> 📝 Contentful Blog</label>
+        <label class="check-opt"><input type="checkbox" value="Contentful Collections" /> 📚 Contentful Collections</label>
+        <label class="check-opt"><input type="checkbox" value="Cloudinary Home" /> 🖼️ Cloudinary Home</label>
+        <label class="check-opt"><input type="checkbox" value="Cloudinary Blog" /> 🖼️ Cloudinary Blog</label>
+        <label class="check-opt"><input type="checkbox" value="Cloudinary Collections" /> 🖼️ Cloudinary Collections</label>
+        <label class="check-opt"><input type="checkbox" value="Cloudflare" /> ⚡ Cloudflare</label>
+        <label class="check-opt"><input type="checkbox" value="BP App" /> 🎮 BP App</label>
+        <label class="check-opt"><input type="checkbox" value="BP Studio" /> 🎬 BP Studio</label>
+      </div>
+    </div>
+
+    <div class="field"><label>Specific Roles, Groups, or Repos to Assign</label><textarea id="ua_roles" style="min-height:60px;" placeholder="e.g. Engineering team Slack channel, frontend-repo GitHub access, etc."></textarea></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico ic-red">📅</div>
+      <div class="card-hd-text"><div class="ct">Timeline &amp; Approvals</div><div class="cd">Scheduling and authorization</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Access Start Date <span class="req">*</span></label><input type="date" id="ua_start" /></div>
+      <div class="field"><label>Access End Date (if temporary)</label><input type="date" id="ua_end" /></div>
+    </div>
+    <div class="field"><label>Urgency</label>
+      <select id="ua_urgency">
+        <option value="">Select</option>
+        <option>Standard (3–5 business days)</option>
+        <option>Expedited (1–2 business days)</option>
+        <option>Urgent (same day)</option>
+      </select>
+    </div>
+    <div class="field"><label>Business Justification <span class="req">*</span></label><textarea id="ua_justification" placeholder="Why does this person need access?"></textarea></div>
+    <div class="field"><label>Manager Approval Status <span class="req">*</span></label>
+      <div class="radio-group" id="ua_approval_group">
+        <label class="radio-opt" onclick="selectRadio('ua_approval_group',this)"><input type="radio" name="ua_approval" value="Approved by Manager" /> ✅ Approved by Manager</label>
+        <label class="radio-opt" onclick="selectRadio('ua_approval_group',this)"><input type="radio" name="ua_approval" value="Pending Manager Approval" /> ⏳ Pending Manager Approval</label>
+        <label class="radio-opt" onclick="selectRadio('ua_approval_group',this)"><input type="radio" name="ua_approval" value="Executive Approval Required" /> 🔒 Executive Approval Required</label>
+      </div>
+    </div>
+    <div class="field"><label>Additional Notes</label><textarea id="ua_notes" style="min-height:60px;" placeholder="Any additional context or special instructions"></textarea></div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" onclick="submitForm('useraccess')">Submit Access Request →</button>
+    <button class="btn btn-ghost" onclick="clearForm('useraccess')">Clear Form</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 07 — SUBMISSIONS LOG
+════════════════════════════════════════════ -->
+<div id="page-log" class="page">
+  <div class="log-hd">
+    <h3>Session Log<span id="logCountDisplay" class="badge-count" style="display:none;">0</span></h3>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" id="exportBtn" onclick="exportToExcel()" style="display:none;">⬇ Export to Excel</button>
+      <button class="btn btn-ghost" id="clearLogBtn" onclick="clearLog()" style="display:none;">Clear All</button>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">All intake submissions from this session are captured below. Export to Excel anytime — one tab per intake type, one tab with everything combined.</p>
+  <div id="submissionsContainer">
+    <div class="log-empty">
+      <div class="log-empty-ico">📋</div>
+      <div>No submissions yet.<br/>Complete any intake form and it will appear here.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ADMIN GATE OVERLAY -->
+<div class="settings-overlay" id="adminGateOverlay">
+  <div class="lock-card">
+    <div class="lock-ico">🔒</div>
+    <h3>Admin Access Required</h3>
+    <p>Enter the admin password to access Jira settings</p>
+    <div id="adminSetupNote" style="background:#F0F7FF;border:1px solid #BDD7F7;border-radius:8px;padding:12px;font-size:12px;color:#1A3A6E;margin-bottom:14px;line-height:1.6;">
+      🛡️ <strong>First-time setup:</strong> Set an admin password to protect these settings. Anyone with the form link will need this password to change Jira credentials.
+    </div>
+    <div class="pw-wrap" style="margin-bottom:12px;">
+      <input type="password" id="adminPwInput" placeholder="Enter admin password" style="width:100%;padding:9px 40px 9px 12px;border:1px solid var(--border);border-radius:7px;font-size:14px;" onkeydown="if(event.key==='Enter')checkAdminPw()" />
+      <button class="toggle-pw" onclick="togglePw('adminPwInput',this)">👁</button>
+    </div>
+    <button class="btn btn-primary" style="width:100%;" onclick="checkAdminPw()">Unlock →</button>
+    <div class="lock-hint">Contact your PMO admin if you've forgotten the password.</div>
+    <button style="margin-top:12px;background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;" onclick="closeAdminGate()">✕ Cancel</button>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <button class="close-btn" onclick="closeSettings()">✕</button>
+    <h3>Integration Settings</h3>
+    <p class="desc">Jira Cloud Configuration<br/><small>Tickets are created automatically on every form submission.</small></p>
+
+    <div class="sec-divider"><span>Credentials</span></div>
+    <div class="field">
+      <label>Jira Domain</label>
+      <input id="cfg_domain" placeholder="bombparty" />
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Just the subdomain — e.g. "bombparty" for bombparty.atlassian.net</div>
+    </div>
+    <div class="field">
+      <label>Project Key</label>
+      <input id="cfg_key" placeholder="PMO" />
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">The key shown before ticket numbers, e.g. PMO, BP, OPS</div>
+    </div>
+    <div class="field">
+      <label>Proxy URL (your Cloudflare Worker URL)</label>
+      <input id="cfg_proxy" placeholder="https://your-worker.workers.dev" />
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Credentials are stored securely in the Worker — not here.</div>
+    </div>
+
+    <div class="sec-divider"><span>Issue Type Mapping</span></div>
+    <div id="mappingRows"></div>
+
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveSettings()">Save Configuration →</button>
+      <button class="btn btn-ghost" onclick="testConnection()">🔌 Test Connection</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-ico">✅</div>
+    <h3>Request Submitted!</h3>
+    <p>Your request has been logged and a Jira ticket created.</p>
+    <div class="jira-ticket-box">
+      <strong>Jira Ticket</strong><br/>
+      <span id="jiraTicketNum">—</span>
+      <br/><a id="jiraTicketLink" href="#" target="_blank" class="jira-ticket-link">View in Jira →</a>
+    </div>
+    <div class="modal-note">📧 <strong>You'll receive a notification</strong> from Jira once the ticket is assigned and updated. Keep your Jira ticket number handy for follow-ups.</div>
+    <button class="btn btn-primary" style="margin-top:20px;width:100%;" onclick="closeModal()">Done — Close</button>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const DEFAULT_CONFIG = {
+  domain: 'bombparty',
+  projectKey: 'PMO',
+  proxyUrl: 'https://jira-proxy.douglasf.workers.dev',
+  issueTypes: {
+    project:     'Epic',
+    change:      'Task',
+    appsupport:  'Bug',
+    enhancement: 'Story',
+    resource:    'Task',
+    useraccess:  'Task'
+  },
+  adminHash: ''
+};
+
+function loadConfig() {
+  const saved = JSON.parse(localStorage.getItem('bpPMOConfig') || '{}');
+  return Object.assign({}, DEFAULT_CONFIG, saved,
+    { issueTypes: Object.assign({}, DEFAULT_CONFIG.issueTypes, saved.issueTypes || {}) });
+}
+function saveConfig(cfg) { localStorage.setItem('bpPMOConfig', JSON.stringify(cfg)); }
+
+// ── TAB NAVIGATION ────────────────────────────────────────────
+function showPage(id, tabEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  tabEl.classList.add('active');
+}
+
+// ── RADIO / CHECK / PRIORITY ──────────────────────────────────
+function selectRadio(groupId, el) {
+  document.querySelectorAll('#' + groupId + ' .radio-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function selectPriority(groupId, el, val) {
+  document.querySelectorAll('#' + groupId + ' .priority-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  el.dataset.value = val;
+}
+
+// wire up checkboxes
+document.querySelectorAll('.check-opt').forEach(label => {
+  label.querySelector('input').addEventListener('change', function() {
+    label.classList.toggle('selected', this.checked);
+  });
+});
+
+// ── ADMIN GATE ────────────────────────────────────────────────
+function openAdminGate() {
+  document.getElementById('adminGateOverlay').classList.add('open');
+  const cfg = loadConfig();
+  document.getElementById('adminSetupNote').style.display = cfg.adminHash ? 'none' : 'block';
+}
+function closeAdminGate() {
+  document.getElementById('adminGateOverlay').classList.remove('open');
+  document.getElementById('adminPwInput').value = '';
+}
+async function checkAdminPw() {
+  const pw = document.getElementById('adminPwInput').value;
+  if (!pw) return;
+  const cfg = loadConfig();
+  const hash = await sha256(pw);
+  if (!cfg.adminHash) {
+    cfg.adminHash = hash;
+    saveConfig(cfg);
+    closeAdminGate();
+    openSettings();
+  } else if (cfg.adminHash === hash) {
+    closeAdminGate();
+    openSettings();
+  } else {
+    document.getElementById('adminPwInput').style.borderColor = 'var(--red)';
+    setTimeout(() => document.getElementById('adminPwInput').style.borderColor = '', 1500);
+  }
+}
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── SETTINGS PANEL ────────────────────────────────────────────
+const FORM_LABELS = {
+  project:'📋 Project Request', change:'🔄 Change Request', appsupport:'⚙️ App Support',
+  enhancement:'✨ Enhancement', resource:'👥 Resource Request', useraccess:'🔐 User Access'
+};
+const ISSUE_TYPE_OPTIONS = ['Epic','Story','Task','Bug','Change','Incident','Improvement','Service Request'];
+
+function openSettings() {
+  const cfg = loadConfig();
+  document.getElementById('cfg_domain').value = cfg.domain;
+  document.getElementById('cfg_key').value = cfg.projectKey;
+  document.getElementById('cfg_proxy').value = cfg.proxyUrl;
+  const rows = document.getElementById('mappingRows');
+  rows.innerHTML = '';
+  Object.entries(cfg.issueTypes).forEach(([key,val]) => {
+    const row = document.createElement('div');
+    row.className = 'mapping-row';
+    row.innerHTML = `<div class="mapping-label">${FORM_LABELS[key]}</div>
+      <select id="map_${key}">${ISSUE_TYPE_OPTIONS.map(o=>`<option${o===val?' selected':''}>` + o + '</option>').join('')}</select>`;
+    rows.appendChild(row);
+  });
+  document.getElementById('settingsOverlay').classList.add('open');
+  updateJiraStatusBadge();
+}
+function closeSettings() {
+  document.getElementById('settingsOverlay').classList.remove('open');
+}
+function saveSettings() {
+  const cfg = loadConfig();
+  cfg.domain = document.getElementById('cfg_domain').value.trim();
+  cfg.projectKey = document.getElementById('cfg_key').value.trim().toUpperCase();
+  cfg.proxyUrl = document.getElementById('cfg_proxy').value.trim();
+  Object.keys(cfg.issueTypes).forEach(key => {
+    const el = document.getElementById('map_' + key);
+    if (el) cfg.issueTypes[key] = el.value;
+  });
+  saveConfig(cfg);
+  closeSettings();
+  updateJiraStatusBadge();
+}
+function testConnection() {
+  const cfg = loadConfig();
+  fetch(cfg.proxyUrl + '?test=1').then(r => {
+    alert(r.ok ? '✅ Connected to Jira!' : '❌ Connection failed: ' + r.status);
+  }).catch(() => alert('❌ Cannot reach proxy URL.'));
+}
+function updateJiraStatusBadge() {
+  const cfg = loadConfig();
+  const badge = document.getElementById('jiraStatusBadge');
+  if (cfg.domain && cfg.projectKey && cfg.proxyUrl) {
+    badge.textContent = 'Jira: ' + cfg.domain + ' · ' + cfg.projectKey;
+    badge.className = 'jira-status ok';
+  } else {
+    badge.textContent = 'Jira: Not Configured';
+    badge.className = 'jira-status err';
+  }
+}
+
+// ── PW TOGGLE ────────────────────────────────────────────────
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+// ── COLLECT FORM DATA ─────────────────────────────────────────
+function getVal(id) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  return el.value || '';
+}
+function getChecks(groupId) {
+  return Array.from(document.querySelectorAll('#' + groupId + ' input[type=checkbox]:checked')).map(c => c.value).join(', ');
+}
+function getRadio(name) {
+  const el = document.querySelector('input[name="' + name + '"]:checked');
+  return el ? el.value : '';
+}
+function getPriority(groupId) {
+  const sel = document.querySelector('#' + groupId + ' .priority-opt.selected');
+  return sel ? (sel.dataset.value || sel.textContent.trim()) : '';
+}
+
+function collectFormData(formType) {
+  const ts = new Date().toLocaleString();
+  const map = {
+    project: () => ({
+      type:'Project Request', submittedAt:ts,
+      name:getVal('pr_name'), email:getVal('pr_email'), projectName:getVal('pr_projname'),
+      sponsor:getVal('pr_sponsor'), bu:getVal('pr_bu'), projectType:getVal('pr_type'),
+      methodology:getVal('pr_method'), priority:getPriority('pr_priority_group'),
+      problem:getVal('pr_problem'), goals:getVal('pr_goals'),
+      inScope:getVal('pr_inscope'), outScope:getVal('pr_outscope'),
+      assumptions:getVal('pr_assumptions'), startDate:getVal('pr_start'),
+      endDate:getVal('pr_end'), duration:getVal('pr_duration'),
+      budget:getVal('pr_budget'), teamSize:getVal('pr_teamsize'),
+      stakeholders:getVal('pr_stakeholders'), risks:getVal('pr_risks')
+    }),
+    change: () => ({
+      type:'Change Request', submittedAt:ts,
+      name:getVal('cr_name'), email:getVal('cr_email'), project:getVal('cr_project'),
+      pm:getVal('cr_pm'), category:getChecks('cr_cat_group'), priority:getPriority('cr_priority_group'),
+      description:getVal('cr_desc'), reason:getVal('cr_reason'), impact:getVal('cr_impact'),
+      currentState:getVal('cr_current'), proposed:getVal('cr_proposed'),
+      origDate:getVal('cr_orig_date'), revDate:getVal('cr_rev_date'),
+      scheduleImpact:getVal('cr_sched_impact'), budgetImpact:getVal('cr_budget_impact'),
+      approver:getVal('cr_approver'), alts:getVal('cr_alts')
+    }),
+    appsupport: () => ({
+      type:'App Support', submittedAt:ts,
+      name:getVal('as_name'), email:getVal('as_email'), bu:getVal('as_bu'),
+      app:getVal('as_app'), issueType:getChecks('as_issue_group'), severity:getPriority('as_priority_group'),
+      summary:getVal('as_summary'), description:getVal('as_desc'), steps:getVal('as_steps'),
+      behavior:getVal('as_behavior'), when:getVal('as_when'), env:getVal('as_env'),
+      usersAffected:getVal('as_users'), bizImpact:getVal('as_biz_impact'),
+      workaround:getRadio('as_workaround')
+    }),
+    enhancement: () => ({
+      type:'Enhancement', submittedAt:ts,
+      name:getVal('en_name'), email:getVal('en_email'), app:getVal('en_app'),
+      enhType:getVal('en_type'), bu:getVal('en_bu'), priority:getPriority('en_priority_group'),
+      title:getVal('en_title'), currentState:getVal('en_current'), desired:getVal('en_desired'),
+      justification:getVal('en_justification'), benefits:getChecks('en_benefits_group'),
+      impact:getPriority('en_impact_group'), delivery:getVal('en_delivery'),
+      effort:getVal('en_effort'), link:getVal('en_link'), notes:getVal('en_notes')
+    }),
+    resource: () => ({
+      type:'Resource Request', submittedAt:ts,
+      name:getVal('rr_name'), email:getVal('rr_email'), project:getVal('rr_project'),
+      bu:getVal('rr_bu'), resourceType:getChecks('rr_type_group'), priority:getPriority('rr_priority_group'),
+      description:getVal('rr_desc'), justification:getVal('rr_justification'),
+      qty:getVal('rr_qty'), neededBy:getVal('rr_needed_by'), duration:getVal('rr_duration'),
+      cost:getVal('rr_cost'), budgetSrc:getVal('rr_budget_src'),
+      skills:getVal('rr_skills'), impact:getVal('rr_impact'), alts:getVal('rr_alts')
+    }),
+    useraccess: () => ({
+      type:'User Access', submittedAt:ts,
+      reqName:getVal('ua_req_name'), reqEmail:getVal('ua_req_email'),
+      requestType:getChecks('ua_type_group'),
+      firstName:getVal('ua_first'), lastName:getVal('ua_last'),
+      workEmail:getVal('ua_work_email'), jobTitle:getVal('ua_title'),
+      department:getVal('ua_dept'), manager:getVal('ua_manager'),
+      empType:getRadio('ua_emp'), accessLevel:getVal('ua_level'),
+      systems:getChecks('ua_systems_group'), roles:getVal('ua_roles'),
+      startDate:getVal('ua_start'), endDate:getVal('ua_end'),
+      urgency:getVal('ua_urgency'), justification:getVal('ua_justification'),
+      approvalStatus:getRadio('ua_approval'), notes:getVal('ua_notes')
+    })
+  };
+  return map[formType] ? map[formType]() : {};
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────
+const sessions = [];
+function updateLogCount() {
+  const n = sessions.length;
+  document.getElementById('logCountBadge').style.display = n > 0 ? '' : 'none';
+  document.getElementById('logCountBadge').textContent = n;
+  const logDisp = document.getElementById('logCountDisplay');
+  if (logDisp) { logDisp.style.display = n > 0 ? '' : 'none'; logDisp.textContent = n; }
+  const expBtn = document.getElementById('exportBtn');
+  if (expBtn) expBtn.style.display = n > 0 ? '' : 'none';
+  const clrBtn = document.getElementById('clearLogBtn');
+  if (clrBtn) clrBtn.style.display = n > 0 ? '' : 'none';
+}
+
+async function submitForm(formType) {
+  const data = collectFormData(formType);
+  sessions.push(data);
+  updateLogCount();
+  renderLog();
+
+  const cfg = loadConfig();
+  if (cfg.proxyUrl && cfg.domain && cfg.projectKey) {
+    const issueType = cfg.issueTypes[formType] || 'Task';
+    const summary = data.summary || data.projectName || data.title || data.type + ' — ' + (data.name || 'Unknown');
+    const description = Object.entries(data).map(([k,v]) => v ? `*${k}:* ${v}` : '').filter(Boolean).join('\n');
+    try {
+      const resp = await fetch(cfg.proxyUrl, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          domain: cfg.domain,
+          fields: {
+            project: { key: cfg.projectKey },
+            summary: summary,
+            description: { version:1, type:'doc', content:[{type:'paragraph', content:[{type:'text', text:description}]}] },
+            issuetype: { name: issueType }
+          }
+        })
+      });
+      const json = await resp.json();
+      if (json.key) {
+        document.getElementById('jiraTicketNum').textContent = json.key;
+        document.getElementById('jiraTicketLink').href = 'https://' + cfg.domain + '.atlassian.net/browse/' + json.key;
+      }
+    } catch(e) {
+      console.error('Jira error:', e);
+    }
+  }
+
+  document.getElementById('successModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('successModal').classList.remove('open');
+}
+
+// ── LOG ────────────────────────────────────────────────────────
+function renderLog() {
+  const container = document.getElementById('submissionsContainer');
+  if (!sessions.length) {
+    container.innerHTML = '<div class="log-empty"><div class="log-empty-ico">📋</div><div>No submissions yet.<br/>Complete any intake form and it will appear here.</div></div>';
+    return;
+  }
+  container.innerHTML = sessions.slice().reverse().map(s => {
+    const fields = Object.entries(s).filter(([k]) => k !== 'type').slice(0, 8);
+    return `<div class="submission-card">
+      <div class="submission-card-hd">
+        <span class="submission-type-badge">${s.type}</span>
+        <span class="submission-ts">${s.submittedAt}</span>
+      </div>
+      ${fields.map(([k,v]) => v ? `<div class="submission-field"><strong>${k}:</strong> ${v}</div>` : '').join('')}
+    </div>`;
+  }).join('');
+}
+
+function clearLog() {
+  if (confirm('Clear all session submissions?')) { sessions.length = 0; updateLogCount(); renderLog(); }
+}
+
+// ── EXPORT TO EXCEL ───────────────────────────────────────────
+function exportToExcel() {
+  const types = ['Project Request','Change Request','App Support','Enhancement','Resource Request','User Access'];
+  let csv = 'Type,Field,Value,Submitted At\n';
+  sessions.forEach(s => {
+    Object.entries(s).forEach(([k,v]) => {
+      if (v) csv += `"${s.type}","${k}","${String(v).replace(/"/g,'\'')}","${s.submittedAt}"\n`;
+    });
+  });
+  const blob = new Blob([csv], { type:'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'BP_PMO_Submissions_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+// ── CLEAR FORM ────────────────────────────────────────────────
+function clearForm(type) {
+  const prefix = { project:'pr', change:'cr', appsupport:'as', enhancement:'en', resource:'rr', useraccess:'ua' }[type];
+  document.querySelectorAll('[id^="' + prefix + '_"]').forEach(el => {
+    if (el.tagName === 'INPUT' && el.type !== 'file') el.value = '';
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    if (el.tagName === 'TEXTAREA') el.value = '';
+  });
+  document.querySelectorAll('.priority-opt.selected, .radio-opt.selected, .check-opt.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('input[type=checkbox]:checked, input[type=radio]:checked').forEach(el => el.checked = false);
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+updateJiraStatusBadge();
+</script>
+</body>
+</html>
